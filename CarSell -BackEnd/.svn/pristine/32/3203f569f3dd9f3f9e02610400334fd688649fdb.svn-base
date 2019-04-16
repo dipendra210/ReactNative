@@ -1,0 +1,219 @@
+from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+import datetime
+
+
+# class Category(models.Model):
+#     name = models.CharField(max_length=120)
+    
+#     def __str__(self):
+#         return self.name
+
+# class Profile(models.Model):
+#     user    = models.OneToOneField(User, on_delete=models.CASCADE)
+#     token   = models.CharField(blank=True, max_length=120)
+#     expo_token = models.TextField(max_length=500, blank=True, null=True)
+#     phonenumber = models.CharField(blank=False, max_length=120)
+#     authy_id    = models.CharField(blank=False, max_length=120)
+
+
+#     @receiver(post_save, sender=User)
+#     def create_user_profile(sender, instance, created, **kwargs):
+#         if created:
+#             Profile.objects.create(user=instance)
+
+#     @receiver(post_save, sender=User)
+#     def save_user_profile(sender, instance, **kwargs):
+#         instance.profile.save()
+
+class Brand(models.Model):
+    name = models.CharField(max_length=120)
+    logo = models.ImageField(upload_to = 'brand', blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+class Model(models.Model):
+    category = models.ForeignKey(Brand, on_delete=models.CASCADE)
+    name = models.CharField(max_length=120)
+
+    def __str__(self):
+        return self.name
+
+class UserRequest(models.Model):
+    user  = models.ForeignKey(User, on_delete=models.CASCADE)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
+    model = models.ForeignKey(Model, on_delete=models.CASCADE)
+
+    YEAR_CHOICES = []
+    for r in range(1940, (datetime.datetime.now().year + 2)):
+        YEAR_CHOICES.append((r,r))
+
+    year_from = models.IntegerField(choices=YEAR_CHOICES)
+    year_to   = models.IntegerField(choices=YEAR_CHOICES)
+
+    price_start = models.IntegerField(blank=True, null=True)
+    price_end   = models.IntegerField(blank=True, null=True)
+
+    TRANSMISSION_CHOICES = [
+        ('Automatic', 'Automatic'),
+        ('Manual', 'Manual')
+    ]
+    trans_gear  = models.CharField(max_length=120, choices=TRANSMISSION_CHOICES, blank=True, null=True)
+
+    kilo_from = models.IntegerField(blank=True, null=True)
+    kilo_to   = models.IntegerField(blank=True, null=True)
+
+    # requested_on = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.id)
+
+class Post(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    description = models.TextField(blank=True, null=True)
+    img0 = models.ImageField(upload_to = 'cars', blank=True, null=True)
+    img1 = models.ImageField(upload_to = 'cars', blank=True, null=True)
+    img2 = models.ImageField(upload_to = 'cars', blank=True, null=True)
+    img3 = models.ImageField(upload_to = 'cars', blank=True, null=True)
+    img4 = models.ImageField(upload_to = 'cars', blank=True, null=True)
+    img5 = models.ImageField(upload_to = 'cars', blank=True, null=True)
+    img6 = models.ImageField(upload_to = 'cars', blank=True, null=True)
+    viewers = models.PositiveIntegerField(default=1)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
+    model = models.ForeignKey(Model, on_delete=models.CASCADE)
+    extra_phone_number = models.BigIntegerField(blank=True, null=True)
+    posted_on = models.DateTimeField(auto_now_add=True)
+    is_freezed = models.BooleanField(default=False)
+    contact = models.TextField(blank=True, null=True)
+    whatsApp = models.TextField(blank=True, null=True)
+
+    ##############################YEARS##################################
+    YEAR_CHOICES = []
+    for r in range(1940, (datetime.datetime.now().year + 2)):
+        YEAR_CHOICES.append((r,r))
+    year_of_made = models.IntegerField(choices=YEAR_CHOICES)
+    ##############################TRANSMISSION##################################
+    TRANSMISSION_CHOICES = [
+        ('Automatic', 'Automatic'),
+        ('Manual', 'Manual')
+    ]
+    transmission = models.CharField(max_length=120, choices=TRANSMISSION_CHOICES, blank=True, null=True)
+    ##############################EXTERIOR COLOR##################################
+    COLOR_CHOICES = [
+        ('White', 'White'),
+        ('Black', 'Black'),
+        ('Blue', 'Blue'),
+        ('Yellow', 'Yellow'),
+        ('Orange', 'Orange'),
+        ('Red', 'Red'),
+        ('Blue', 'Blue'),
+        ('Pink', 'Pink'),
+        ('Purple', 'Purple'),
+        ('Tan', 'Tan'),
+        ('Brown', 'Brown'),
+        ('Grey', 'Grey'),
+    ]
+    exterior_color = models.CharField(max_length=120, choices=COLOR_CHOICES, blank=True, null=True)
+    ##############################INTERIOR COLOR##################################
+    COLOR_CHOICES = [
+        ('White', 'White'),
+        ('Black', 'Black'),
+        ('Blue', 'Blue'),
+        ('Yellow', 'Yellow'),
+        ('Orange', 'Orange'),
+        ('Red', 'Red'),
+        ('Blue', 'Blue'),
+        ('Pink', 'Pink'),
+        ('Purple', 'Purple'),
+        ('Tan', 'Tan'),
+        ('Brown', 'Brown'),
+        ('Grey', 'Grey'),
+    ]
+    interior_color = models.CharField(max_length=120, choices=COLOR_CHOICES, blank=True, null=True)
+    ##############################PRICE##################################
+    price = models.IntegerField(blank=True, null=True)
+    price_is_hidden = models.BooleanField(default=False)
+
+    ##############################KILOMETER##################################
+    Kilometer = models.IntegerField(blank=True, null=True)
+
+    ##############################BODY TYPE##################################
+    BODY_TYPE_CHOICES = [
+        ('Sedan', 'Sedan'),
+        ('SUV', 'SUV'),
+        ('Hatchback', 'Hatchback'),
+        ('Coupe', 'Coupe'),
+        ('Pickup Truck', 'Pickup Truck'),
+        ('Sport', 'Sport'),
+        ('MicroCar', 'MicroCar'),
+        ('Van', 'Van'),
+        
+    ]
+    body_type = models.CharField(max_length=120, choices=BODY_TYPE_CHOICES, blank=True, null=True)
+    
+    ##############################SUN ROOF##################################
+    SUNROOF_CHOICES = [
+        ('No', 'No'),
+        ('Normal', 'Normal'),
+        ('Panorama', 'Panorama'),
+    ]
+    sunroof = models.CharField(max_length=120, choices=SUNROOF_CHOICES, blank=True, null=True)
+
+    CONVERTABLE_CHOICES = [
+        ('Yes', 'Yes'),
+        ('No', 'No')
+    ]
+    convertable = models.CharField(max_length=120, choices=CONVERTABLE_CHOICES, default='Yes')
+
+    ##########################IS SPECIAL POST? #################################
+    IS_SPECIAL = [
+        ('Yes', 'Yes'),
+        ('No', 'No')
+    ]
+    is_special = models.CharField(max_length=4, choices=IS_SPECIAL, default='No')
+
+    ##########################IS FIRST OWNER? #################################
+    first_owner = models.CharField(max_length=30, blank=True, null=True)
+
+    ##########################IS FROME KWAIT? #################################
+    is_from_kwait = models.CharField(max_length=120, blank=True, null=True)
+
+    ##########################IS UNDER WARRANTY? ###############################
+    is_under_warranty = models.CharField(max_length=30, blank=True, null=True)
+
+    ##########################IS GET ANY ACCIDENT? #################################
+    is_get_accident = models.CharField(max_length=30, blank=True, null=True)
+
+    ##########################IS THE CAR REPAINTED? #################################
+    is_repainted = models.CharField(max_length=120, blank=True, null=True)
+
+    ##########################   Car Condition   ######################################
+    condition = models.CharField(max_length=120, blank=True, null=True)
+
+    ##########################DO YOU HAVE CAR ACCEPT EXAM? #################################
+    IS_ACCEPT_EXAM = [
+        ('Yes', 'Yes'),
+        ('No', 'No')
+    ]
+    is_accept_exam = models.CharField(max_length=120, choices=IS_ACCEPT_EXAM, default='No')
+
+    mini_price = models.IntegerField(blank=True, null=True)
+
+    has_visible_defect = models.CharField(max_length=120, blank=True, null=True)
+
+    comment = models.CharField(max_length=120, blank=True, null=True)
+
+    COMMNICATION = [
+        ('Phone', 'Phone'),
+        ('Whatsapp', 'Whatsapp'),
+        ('Email', 'Email')
+    ]
+    communication = models.CharField(max_length=120, choices=COMMNICATION, default='No')
+
+    email = models.EmailField(max_length=254, null=True, blank=True)
+
+    def __str__(self):
+        return str(self.id)

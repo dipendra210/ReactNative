@@ -1,0 +1,15 @@
+from django.contrib import admin
+<<<<<<< .mine
+from .models import Brand, Post, Model, UserRequest
+# , Profile
+||||||| .r387
+from .models import Brand, Post, Model, UserRequest, Profile
+=======
+from .models import Brand, Post, Model, UserRequest
+>>>>>>> .r400
+# Register your models here.
+admin.site.register(Brand)
+admin.site.register(Post)
+admin.site.register(Model)
+admin.site.register(UserRequest)
+# admin.site.register(Profile)
