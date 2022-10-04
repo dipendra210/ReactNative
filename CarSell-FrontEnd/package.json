@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "expo": "^30.0.1",
+    "expo": "^46.0.14",
     "expo-cli": "^2.4.1",
     "expo-localization": "^1.0.0",
     "i18n-js": "^3.1.0",
